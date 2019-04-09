@@ -12,31 +12,33 @@ class CartesianGrid:
         self.canvas = Canvas(master, bg="black", borderwidth=3, relief="sunken")
 
         ### Configuring vertical position
-        try:
+        if "v_pos" in kwargs:
             if kwargs["v_pos"] == "top":
                 self.canvas.place_configure(in_=master, rely=0.0, relx=0.0, relwidth=0.5, relheight=0.5)
             elif kwargs["v_pos"] == "middle":
                 self.canvas.place_configure(in_=master, rely=0.25, relx=0.0, relwidth=0.5, relheight=0.5)
             elif kwargs["v_pos"] == "bottom":
                 self.canvas.place_configure(in_=master, rely=0.5, relx=0.0, relwidth=0.5, relheight=0.5)
-            else:
-               self.canvas.place_configure(rely=kwargs["v_pos"])
-        except Exception:
-            print("Bad parameter for vertical position!\nSetting to default: \"top\"")
-            self.canvas.place_configure(rely=0.0)
+            elif type(kwargs["v_pos"]) == float:
+                self.canvas.place_configure(in_=master, rely=kwargs["v_pos"], relx=0.0, relwidth=0.5, relheight=0.5)
+        else:
+            # Valid parameter for vertical position not provided!
+            # Setting to default: "top"
+            self.canvas.place_configure(in_=master, rely=0.0, relx=0.0, relwidth=0.5, relheight=0.5)
         
         ### Configuring horisontal position
-        try:
+        if "h_pos" in kwargs:
             if kwargs["h_pos"] == "left":
                 self.canvas.place_configure(relx=0.0)
             elif kwargs["h_pos"] == "middle":
                 self.canvas.place_configure(relx=0.25)
             elif kwargs["h_pos"] == "right":
                 self.canvas.place_configure(relx=0.5)
-            else:
+            elif type(kwargs["h_pos"]) == float:
                 self.canvas.place_configure(relx=kwargs["h_pos"])
-        except Exception:
-            print("Bad parameter for horizontal position!\nSetting to default: \"left\"")
+        else:
+            # Valid parameter for horizontal position not provided!
+            # Setting to default: "left"
             self.canvas.place_configure(relx=0.0)
 
         self.canvas.place()

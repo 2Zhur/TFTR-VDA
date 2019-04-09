@@ -11,8 +11,9 @@ class App:
         self.pointer_y = 0
 
         # Setting up the plots
-        self.cartesian = CartesianGrid(frame, master)
-        self.cartesian_zoom = CartesianGrid(frame, master)
+        self.cartesian = CartesianGrid(frame, master) # canvas is placed in the default position
+                                                      # in the upper left corner
+        self.cartesian_zoom = CartesianGrid(frame, master, v_pos="bottom")
         self.polar = PolarGrid(frame, master)
         self.quit_button = QuitButton(frame, master, self.cartesian.canv_w, self.polar.canv_w)
 
