@@ -3,14 +3,40 @@ from tkinter import Canvas, Frame, Button
 
 class CartesianGrid:
     
-    def __init__(self, frame, master):
+    def __init__(self, frame, master, **kwargs):
 
         # Getting frame dimensions
         self.canv_w, self.canv_h = frame.winfo_vrootwidth()/2, frame.winfo_vrootheight()/2
 
-        # Configuring canvas dimensions
+        # Configuring canvas dimensions and position
         self.canvas = Canvas(master, bg="black", borderwidth=3, relief="sunken")
-        self.canvas.place_configure(in_=master, relx=0.0, rely=0.0, relwidth=0.5, relheight=0.5)
+
+        ### Configuring vertical position
+        if kwargs["v_pos"] == "top":
+            self.canvas.place_configure(in_=master, rely=0.0, relx=0.0, relwidth=0.5, relheight=0.5)
+        elif kwargs["v_pos"] == "middle":
+            self.canvas.place_configure(in_=master, rely=0.25, relx=0.0, relwidth=0.5, relheight=0.5)
+        elif kwargs["v_pos"] == "bottom":
+            self.canvas.place_configure(in_=master, rely=0.5, relx=0.0, relwidth=0.5, relheight=0.5)
+        else:
+            try:
+                self.canvas.place_configure(rely=kwargs["v_pos"])
+            except Exception:
+                print("Bad parameter for vertical position!\nSetting to default: \"top\"")
+        
+        ### Configuring horisontal position
+        if kwargs["h_pos"] == "left":
+            self.canvas.place_configure(relx=0.0)
+        elif kwargs["h_pos"] == "middle":
+            self.canvas.place_configure(relx=0.25)
+        elif kwargs["h_pos"] == "right":
+            self.canvas.place_configure(relx=0.5)
+        else:
+            try:
+                self.canvas.place_configure(relx=kwargs["h_pos"])
+            except Exception:
+                print("Bad parameter for horizontal position!\nSetting to default: \"left\"")
+
         self.canvas.place()
 
         # Drawing axes
@@ -34,6 +60,9 @@ class CartesianGrid:
                 fill="yellow", width=1.0, dash=[1, 8]
                 )
             grid_line_no += 1
+    
+    def plot_data(self, data):
+        pass
 
 
 class PolarGrid:

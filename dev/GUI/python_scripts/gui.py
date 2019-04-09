@@ -12,6 +12,7 @@ class App:
 
         # Setting up the plots
         self.cartesian = CartesianGrid(frame, master)
+        self.cartesian_zoom = CartesianGrid(frame, master)
         self.polar = PolarGrid(frame, master)
         self.quit_button = QuitButton(frame, master, self.cartesian.canv_w, self.polar.canv_w)
 
