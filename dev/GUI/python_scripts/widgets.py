@@ -12,30 +12,32 @@ class CartesianGrid:
         self.canvas = Canvas(master, bg="black", borderwidth=3, relief="sunken")
 
         ### Configuring vertical position
-        if kwargs["v_pos"] == "top":
-            self.canvas.place_configure(in_=master, rely=0.0, relx=0.0, relwidth=0.5, relheight=0.5)
-        elif kwargs["v_pos"] == "middle":
-            self.canvas.place_configure(in_=master, rely=0.25, relx=0.0, relwidth=0.5, relheight=0.5)
-        elif kwargs["v_pos"] == "bottom":
-            self.canvas.place_configure(in_=master, rely=0.5, relx=0.0, relwidth=0.5, relheight=0.5)
-        else:
-            try:
-                self.canvas.place_configure(rely=kwargs["v_pos"])
-            except Exception:
-                print("Bad parameter for vertical position!\nSetting to default: \"top\"")
+        try:
+            if kwargs["v_pos"] == "top":
+                self.canvas.place_configure(in_=master, rely=0.0, relx=0.0, relwidth=0.5, relheight=0.5)
+            elif kwargs["v_pos"] == "middle":
+                self.canvas.place_configure(in_=master, rely=0.25, relx=0.0, relwidth=0.5, relheight=0.5)
+            elif kwargs["v_pos"] == "bottom":
+                self.canvas.place_configure(in_=master, rely=0.5, relx=0.0, relwidth=0.5, relheight=0.5)
+            else:
+               self.canvas.place_configure(rely=kwargs["v_pos"])
+        except Exception:
+            print("Bad parameter for vertical position!\nSetting to default: \"top\"")
+            self.canvas.place_configure(rely=0.0)
         
         ### Configuring horisontal position
-        if kwargs["h_pos"] == "left":
-            self.canvas.place_configure(relx=0.0)
-        elif kwargs["h_pos"] == "middle":
-            self.canvas.place_configure(relx=0.25)
-        elif kwargs["h_pos"] == "right":
-            self.canvas.place_configure(relx=0.5)
-        else:
-            try:
+        try:
+            if kwargs["h_pos"] == "left":
+                self.canvas.place_configure(relx=0.0)
+            elif kwargs["h_pos"] == "middle":
+                self.canvas.place_configure(relx=0.25)
+            elif kwargs["h_pos"] == "right":
+                self.canvas.place_configure(relx=0.5)
+            else:
                 self.canvas.place_configure(relx=kwargs["h_pos"])
-            except Exception:
-                print("Bad parameter for horizontal position!\nSetting to default: \"left\"")
+        except Exception:
+            print("Bad parameter for horizontal position!\nSetting to default: \"left\"")
+            self.canvas.place_configure(relx=0.0)
 
         self.canvas.place()
 
