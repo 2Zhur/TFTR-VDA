@@ -1,4 +1,5 @@
 from tkinter import Canvas, Frame, Button
+from numpy import array
 
 
 class CartesianGrid:
