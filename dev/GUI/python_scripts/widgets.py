@@ -1,5 +1,4 @@
 from tkinter import Canvas, Frame, Button
-from numpy import ndarray
 
 
 class CartesianGrid:
@@ -121,7 +120,7 @@ class PolarGrid:
             )
         self.canvas.create_oval(
             100, 100, self.canv_w-100, self.canv_h-100, outline="yellow",\
-            dash=[1, 16]
+            dash=[16, 16]
             )
 
 
