@@ -21,7 +21,7 @@ class Plot:
         ### Relief configuration
         ### if not "relief" in kwargs:
         ###    kwargs["relief"] = "sunken"
-
+        ###A9ept was here
         self.canvas = Canvas(master, bg="black", borderwidth=3, relief="sunken")
         self.canvas.pack_configure(
             in_=master, relx=kwargs["relx"], rely=kwargs["rely"], relwidth=kwargs["relwidth"],\
