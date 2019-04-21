@@ -4,7 +4,7 @@ from numpy import ndarray
 
 
 class Plot:
-    
+    # Polina was here
     # Class constructor
     def __init__(self, master, plot_type, **kwargs):
         
