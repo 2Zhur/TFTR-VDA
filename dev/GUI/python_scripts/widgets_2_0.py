@@ -30,8 +30,7 @@ class Plot:
         self.canvas.place()
 
         self.canv_w, self.canv_h = frame.winfo_vrootwidth()/2, frame.winfo_vrootheight()/2
-
-
+        
         if plot_type == "cartesian":
             self._make_cartesian_grid()
         elif plot_type == "polar":

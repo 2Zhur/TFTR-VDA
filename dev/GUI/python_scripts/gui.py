@@ -1,4 +1,5 @@
-from widgets import CartesianGrid, PolarGrid, QuitButton
+from plots import Plot
+from widgets import CartesianGrid, QuitButton
 from tkinter import Tk, Frame
 
 class App:
@@ -14,7 +15,7 @@ class App:
         self.cartesian = CartesianGrid(frame, master) # canvas is placed in the default position
                                                       # in the upper left corner
         self.cartesian_zoom = CartesianGrid(frame, master, v_pos="bottom")
-        self.polar = PolarGrid(frame, master)
+        self.polar = Plot(master, "polar", relx=0.5, relwidth=0.4)
         self.quit_button = QuitButton(frame, master, self.cartesian.canv_w, self.polar.canv_w)
 
         # Initializing mouse pointer tracking

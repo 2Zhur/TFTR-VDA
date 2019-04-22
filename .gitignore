@@ -4,3 +4,5 @@ dev/GUI/python_scripts/__pycache__
 # Ignore testing directories
 dev/GUI/python_scripts/learning_tkinter
 dev/GUI/python_scripts/learning_numpy
+dev/GUI/python_scripts/widgets.py
+dev/GUI/python_scripts/widgets_2_0.py
