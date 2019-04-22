@@ -6,7 +6,7 @@ from ctypes import c_int16
 buf = ndarray((3001, 15), int)
 raw_data = np.zeros((3001,2), int)
 
-#parsing from config
+# Parsing the config file
 def read_data(data):
         return [line.split() for line in data]
         
@@ -21,7 +21,7 @@ def get_sth(data, num_of_sen, num_of_elem):
 
 #======================================================
 
-#parsing from binary file
+# Parsing the binary file
 with open("/home/tony/Documents/4Tony/BP76778.C1", "rb") as f:
 
     i = 0
@@ -39,7 +39,7 @@ with open("/home/tony/Documents/4Tony/BP76778.C1", "rb") as f:
 
 #======================================================
 
-    #Insert time axis (us)
+    # Insert time axis (us)
     while i < 3001:
         raw_data[i][0] = 2 * i
         i += 1
@@ -49,7 +49,7 @@ with open("/home/tony/Documents/4Tony/BP76778.C1", "rb") as f:
     
 #======================================================
 
-    #Sum all sensors
+    # Sum all sensors
     while j<3001:
         while i < 15:
             raw_data[j][1] = raw_data[j][1]+buf[j][i]
@@ -59,7 +59,7 @@ with open("/home/tony/Documents/4Tony/BP76778.C1", "rb") as f:
 
 #======================================================
 
-#upload binary data to file
+# Load binary data to file
 with open("/home/tony/Documents/4Tony/Data_Sum.txt", "w") as w:
     j=0
     while j<3001:
