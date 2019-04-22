@@ -3,8 +3,7 @@ from tkinter import Canvas
 class Plot:
     def __init__(self, frame, master, grid_type, **kwargs):
 
-        #Denis was here
-        # Acquiring window dimensions
+                # Acquiring window dimensions
         self.window_w = frame.winfo_vrootwidth()
         self.window_h = frame.winfo_vrootheight()
 
