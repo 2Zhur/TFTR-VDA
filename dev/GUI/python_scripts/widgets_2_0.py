@@ -6,7 +6,7 @@ from numpy import ndarray
 class Plot:
     
     # Class constructor
-    def __init__(self, master, plot_type, **kwargs):
+    def __init__(self, frame, master, plot_type, **kwargs):
         
         # Initializing the canvas
         
@@ -23,14 +23,14 @@ class Plot:
         ###    kwargs["relief"] = "sunken"
 
         self.canvas = Canvas(master, bg="black", borderwidth=3, relief="sunken")
-        self.canvas.pack_configure(
+        self.canvas.place_configure(
             in_=master, relx=kwargs["relx"], rely=kwargs["rely"], relwidth=kwargs["relwidth"],\
             relheight=kwargs["relheight"]
             )
         self.canvas.place()
-        
-        self.canv_w = self.canvas.winfo_width()
-        self.canv_h = self.canvas.winfo_height()
+
+        self.canv_w, self.canv_h = frame.winfo_vrootwidth()/2, frame.winfo_vrootheight()/2
+
 
         if plot_type == "cartesian":
             self._make_cartesian_grid()
