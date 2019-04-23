@@ -1,6 +1,8 @@
 from plots import Plot
 from widgets import CartesianGrid, QuitButton
 from tkinter import Tk, Frame
+from math import sin, cos, radians
+from numpy import array
 
 class App:
 
@@ -16,6 +18,13 @@ class App:
                                                       # in the upper left corner
         self.cartesian_zoom = CartesianGrid(frame, master, v_pos="bottom")
         self.polar = Plot(master, "polar", relx=0.5, relwidth=0.4)
+        
+        self.data_tplt = [cos(radians(6*i)) for i in range(360)]
+
+        data = array(self.data_tplt)
+
+        self.polar.plot_data(data)
+
         self.quit_button = QuitButton(frame, master, self.cartesian.canv_w, self.polar.canv_w)
 
         # Initializing mouse pointer tracking
