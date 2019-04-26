@@ -19,7 +19,7 @@ class App:
         self.cartesian_zoom = CartesianGrid(frame, master, v_pos="bottom")
         self.polar = Plot(master, "polar", relx=0.5, relwidth=0.4)
         
-        self.data_tplt = [cos(radians(6*i)) for i in range(360)]
+        self.data_tplt = [cos(radians(2*i)) for i in range(360)]
 
         data = array(self.data_tplt)
 
@@ -28,10 +28,13 @@ class App:
         self.quit_button = QuitButton(frame, master, self.cartesian.canv_w, self.polar.canv_w)
 
         # Initializing mouse pointer tracking
-        self.cartesian.canvas.bind("<B1-Motion>", self.track_pointer)
+        self.polar.canvas.bind("<B1-Motion>", self.track_pointer)
     
     def track_pointer(self, event):
-        self.pointer_y = event.y
+        canv_w = self.polar.canvas.winfo_vrootwidth()
+        self.polar.plot_data(
+            array([cos(radians(100*i*event.x/canv_w)) + 0.7 * sin(radians(13*i*event.x/canv_w)) for i in range(360)])
+        )
 
 root = Tk()
 
