@@ -25,7 +25,7 @@ def bin_data(bin_file):
 
     return buf
 
-#removing broken sensors
+# Removing broken sensors
 def check_binary_file(bin_data, config):
     num_of_sen = 15
     check = get_sth(config, num_of_sen, 1, 1)
@@ -39,7 +39,7 @@ def check_binary_file(bin_data, config):
     
     return bin_data , num_of_sen-j   
 
-#the correct polarity
+# Setting the correct polarity
 def polarity(bin_data,config):
     num_of_sen = 15
     check = get_sth(config, num_of_sen, 2, 3)
@@ -56,7 +56,7 @@ def polarity(bin_data,config):
             
     return bin_data
 
-# Parsing config file        
+# Parsing the config file        
 def get_sth(config, num_of_sen,num_of_start, num_of_elem):
         with open(config, "r") as data:
             buf = [line.split() for line in data]
@@ -83,7 +83,7 @@ def first_graph_data(buf, num_of_sens):
     raw_data = np.zeros((3001,2), int)
     i=0
 
-    #Insert time axis (us)
+    # Insert time axis (us)
     while i < 3001:
         raw_data[i][0] = 2 * i
         i += 1
@@ -91,7 +91,7 @@ def first_graph_data(buf, num_of_sens):
     i=0
     j=0
 
-    #Sum all sensors
+    # Sum all sensors
     while j<3001:
         while i < num_of_sens:
             raw_data[j][1] = raw_data[j][1]+buf[j][i]

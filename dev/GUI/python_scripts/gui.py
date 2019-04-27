@@ -33,7 +33,7 @@ class App:
     def track_pointer(self, event):
         canv_w = self.polar.canvas.winfo_vrootwidth()
         self.polar.plot_data(
-            array([cos(radians(100*i*event.x/canv_w)) + 0.7 * sin(radians(13*i*event.x/canv_w)) for i in range(360)])
+            array([0.3 * sin(radians(25 * i*event.x/canv_w)) for i in range(360)])
         )
 
 root = Tk()
