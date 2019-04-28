@@ -28,12 +28,12 @@ class App:
         self.quit_button = QuitButton(frame, master, self.cartesian.canv_w, self.polar.canv_w)
 
         # Initializing mouse pointer tracking
-        self.polar.canvas.bind("<B1-Motion>", self.track_pointer)
+        self.cartesian.canvas.bind("<B1-Motion>", self.track_pointer)
     
     def track_pointer(self, event):
-        canv_w = self.polar.canvas.winfo_vrootwidth()
+        canv_w = self.cartesian.canvas.winfo_width()
         self.polar.plot_data(
-            array([0.3 * sin(radians(25 * i*event.x/canv_w)) for i in range(360)])
+            array([sin(radians(6 * i*event.x/canv_w)) for i in range(360)])
         )
 
 root = Tk()

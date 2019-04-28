@@ -1,7 +1,8 @@
 from tkinter import Canvas
 from math import sin, cos, radians
 
-class Plot:
+class Plot:   
+
     def __init__(self, master, grid_type, **kwargs):
 
         # Setting relative canvas dimensions, if not set
@@ -23,9 +24,8 @@ class Plot:
             kwargs["relheight"] = 0.5
         
         ### Also configure zoom in case of a cartesian grid
-        if not "zoom" in kwargs:
+        if grid_type == "cartesian" and not "zoom" in kwargs:
             kwargs["zoom"] = 1.0
-
 
         # Initializing the canvas
         self.canvas = Canvas(
@@ -119,6 +119,9 @@ class Plot:
         if self.grid_type == "cartesian":
             pass
 
+##############################################################
+#                 Polar grid private methods                 #
+##############################################################
 
     def _make_polar_grid(self):
         
@@ -186,9 +189,9 @@ class Plot:
             )
             i += 1
 
-    def _get_coords(self, r, fi, rmin, rmax, dmin, dmax):
-        pass
-        
+##############################################################
+#                   For the cartesian grid                   # 
+##############################################################        
 
     def _make_cartesian_grid(self):
         pass
