@@ -57,6 +57,8 @@ class Plot:
             self._make_cartesian_grid()
         
         self.grid_type = grid_type
+        
+########
         if self.grid_type == "cartesian":
             self.zoom = kwargs["zoom"]
 
@@ -192,6 +194,15 @@ class Plot:
 ##############################################################
 #                   For the cartesian grid                   # 
 ##############################################################        
+
+#
+# The class already has the folowing attributes:
+# - self.canv_w - the width of the canvas
+# - self.canv_h - the height of the canvas
+# - self.zoom - the desired zoom
+#   (see lines 26 and 61)
+# - self.grid_type - "cartesian" or "polar"
+#
 
     def _make_cartesian_grid(self):
         pass
