@@ -5,12 +5,28 @@ from ctypes import c_int16
 
 ### Parsing data (with broken sensors)
 
+# Removing broken sensors
+def check_binary_file(bin_file_name, config_one, config_two):
+    bd = bin_data(bin_file_name)
+    bd = polarity(bd, config_one)
+    num_of_sen = 15
+    check = get_sth(config_two, num_of_sen, 1, 1)
+    i = 0
+    j = 0
+    for sen in check:
+        if sen == 1:
+            bd = np.delete(bd, i-j, 1)
+            j+=1
+        i+=1
+
+    return bd , num_of_sen-j
+
 # Parsing binary file
-def bin_data(bin_file):
+def bin_data(bin_file_name):
 
     buf = ndarray((3001, 15), int)
 
-    with open(bin_file, "rb") as f:
+    with open(bin_file_name, "rb") as f:
 
         i = 0
         j = 0
@@ -24,20 +40,6 @@ def bin_data(bin_file):
             j = 0
 
     return buf
-
-# Removing broken sensors
-def check_binary_file(bin_data, config):
-    num_of_sen = 15
-    check = get_sth(config, num_of_sen, 1, 1)
-    i = 0
-    j = 0
-    for sen in check:
-        if sen == 1:
-            bin_data = np.delete(bin_data, i-j, 1)
-            j+=1
-        i+=1  
-    
-    return bin_data , num_of_sen-j   
 
 # Setting the correct polarity
 def polarity(bin_data,config):
@@ -101,39 +103,36 @@ def first_graph_data(buf, num_of_sens):
     return raw_data
 
 # Load binary data to file
-def write_to_file(output_file,raw_data,num_of_lines):   
-    with open("/home/tony/Documents/4Tony/Data_Sum.txt", "w") as w:
+def write_to_file(output_file_name, raw_data, num_of_lines):
+    with open(output_file_name, "w") as w:
         j=0
         while j<num_of_lines+1:
             w.write(str(raw_data[j])+'\n')
             j+=1
 
 
-config_one= "/home/tony/Documents/4Tony/P93A.MM"
-config_two = "/home/tony/Documents/4Tony/I76778.C1"
-bin_file = "/home/tony/Documents/4Tony/BP76778.C1"
+#config_two = "I76778.C1"
+#bin_file = "BP76778.C1"
 
-data, num_of_sens = check_binary_file(polarity(bin_data(bin_file),config_one), config_two)
+#data, num_of_sens = check_binary_file(bin_file, config_one, config_two)
 
-
-print(data)
-print("\n")
-print(get_sth(config_two, num_of_sens, 1, 1))
-print("\n")
+#print(np.shape(data))
+#print(data)
+#print("\n")
+#print(get_sth(config_two, num_of_sens, 1, 1))
+#print("\n")
 #print(first_graph_data(data, num_of_sens))
 
-
-
 #print(get_sth(config_two, 15, 1, 1))
-#print(raw_data[3].mean())
-#print(raw_data[3].max())
-#print(raw_data[3].min())
+#print(data[3].mean())
+#print(data[3].max())
+#print(data[3].min())
 
-#for item in raw_data:
-#    print(item[0])
-#    print(item[1])
-#    print("\n")
+# for item in data:
+#     print(item[0])
+#     print(item[1])
+#     print("\n")
 
- #plt.rcParams["figure.figsize"] = [100.0, 150.0]
- #plt.plot(raw_data[0].transpose, raw_data[1:16], subplots=True)
- #plt.savefig('detector2.png', bbox_inches='tight')
+#plt.rcParams["figure.figsize"] = [100.0, 150.0]
+#plt.plot(data[0].transpose, data[1:16], subplots=True)
+#plt.savefig('detector2.png', bbox_inches='tight')
