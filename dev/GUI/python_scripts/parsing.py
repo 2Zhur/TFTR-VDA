@@ -1,12 +1,11 @@
 import numpy as np
 from numpy import ndarray
 from matplotlib import pyplot as plt
-from ctypes import c_int16
 
-### Parsing data (with broken sensors)
+### Data acquisition (from binary and config files)
 
-# Removing broken sensors
-def check_binary_file(bin_file_name, config_one, config_two):
+# Extracting just the useful data (removing data from broken sensors)
+def extract_data(bin_file_name, config_one, config_two):
     bd = bin_data(bin_file_name)
     bd = polarity(bd, config_one)
     num_of_sen = 15
@@ -21,7 +20,7 @@ def check_binary_file(bin_file_name, config_one, config_two):
 
     return bd , num_of_sen-j
 
-# Parsing binary file
+# Reading data from a binary file
 def bin_data(bin_file_name):
 
     buf = ndarray((3001, 15), int)
@@ -42,7 +41,7 @@ def bin_data(bin_file_name):
     return buf
 
 # Setting the correct polarity
-def polarity(bin_data,config):
+def polarity(bin_data, config):
     num_of_sen = 15
     check = get_sth(config, num_of_sen, 2, 3)
     i = 0
@@ -54,8 +53,6 @@ def polarity(bin_data,config):
                 j+=1
             j=0    
         i+=1
-            
-            
     return bin_data
 
 # Parsing the config file        
@@ -73,14 +70,14 @@ def get_sth(config, num_of_sen,num_of_start, num_of_elem):
         return a
 
 # Getting data for math
-def math_data(config, num_of_sen, bin_data, t): 
+def math_data(config, num_of_sen, bin_data, t):
     den = np.zeros((2,num_of_sen), float)
     den[0] = get_sth(config, num_of_sen,2, 1)
     den[1] = bin_data[int(t/2)]
     return den
 
 # Getting data for main graph
-def first_graph_data(buf, num_of_sens):
+def timed_data(buf, num_of_sens):
     
     raw_data = np.zeros((3001,2), int)
     i=0
