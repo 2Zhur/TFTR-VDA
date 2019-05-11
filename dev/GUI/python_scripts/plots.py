@@ -119,7 +119,81 @@ class Plot:
             # values -> radius + angle -> x, y -> relx, rely
 
         if self.grid_type == "cartesian":
-            pass
+         
+            hi_1 = self.canv_h - 40
+            hi_2 = hi_1/2
+
+            delt_plus_max = -1
+            delt_minus_min = 1
+
+            for i in range(0,3001,1):
+                if data[i] > 0:
+                    if delt_plus_max <= data[i]:
+                        delt_plus_max = data[i]
+                else:
+                    if delt_minus_min >= data[i]:
+                        delt_minus_min = data[i]
+            
+            delt_plus = delt_plus_max / (hi_2 - 0)
+            delt_minus = delt_minus_min / (hi_1 - hi_2)
+
+            ListOfCoords = list()
+            for i in range (3001):
+                if data[i] >= 0:
+                    ListOfCoords.append(hi_2 - data[i]/delt_plus)
+                else:
+                    ListOfCoords.append(hi_2 + data[i]/delt_minus)
+
+            # For creating plot of 500 points on canvas 
+            step = 6
+            for i in range (0,3001-step,step):
+                self.canvas.create_line(i//step, ListOfCoords[i], (i+step)//step, ListOfCoords[i+step], full = "blue")
+        
+        if self.grid_type == "zoom":
+
+            def motion(event):
+                zoomSquareSize = 50
+ 
+                x1 = event.x - zoomSquareSize
+                x2 = event.x + zoomSquareSize
+                if x1 < 0:
+                    x1 = 0
+                if x2 > self.canv_w:
+                    x2 = self.canv_w
+
+                step = 1
+                stretch = self.canv_w // (2 * zoomSquareSize)
+
+                self.canvas.delete("all")
+
+                # For crating plot in motion 
+                for i in range (x1,x2-step,step):
+                    self.canvas.create_line((i-x1)*stretch, ListOfCoords[i], (i-x1+step)*stretch, ListOfCoords[i+step], fill = "blue")
+
+                    #Grid, VD is 80 mcs 
+                    vertical_line = 5
+
+                    while vertical_line > 0: 
+
+                        self.canvas.create_line(
+                            (self.canv_w + vertical_line * stretch -event.x)%(self.canv_w//stretch)*stretch,\
+                            0,\
+                            (self.canv_w + vertical_line * stretch - event.x)%(self.canv_w//stretch)*stretch,\
+                            self.canv_h,\
+                            fill = "yellow", width=1.0, dash=[1, 8]
+                            )
+
+                        vertical_line = vertical_line - 1  
+
+                        horisont_line = 1
+                        while horisont_line*50 < self.canv_h:
+                            self.canvas.create_line(
+                                self.canv_w, 10+horisont_line*50, 0, 10+horisont_line*50,\
+                                fill="yellow", width=1.0, dash=[1, 8]
+                                )
+                            horisont_line += 1
+
+                self.canvas.bind("<B1-Motion>", motion)
 
 ##############################################################
 #                 Polar grid private methods                 #
@@ -204,5 +278,36 @@ class Plot:
 # - self.grid_type - "cartesian" or "polar"
 #
 
+
+
     def _make_cartesian_grid(self):
-        pass
+        ### Drawing axes
+        self.canvas.create_line(
+            10, self.canv_h/2, self.canv_w-10, self.canv_h/2,\
+            fill="yellow", width=1.0
+            )
+        self.canvas.create_line(
+            10, self.canv_h, 10, 0, fill="yellow", width=1.0
+            )
+
+        ### Drawing the virtical lines
+        ### Value of division is 600mcs
+        horisont_line = 1
+        while horisont_line*50 < self.canv_w:
+            self.canvas.create_line(
+                10+horisont_line*50, self.canv_h, 10+horisont_line*50,\
+                0, fill="yellow", width=1.0, dash=[1, 8]
+                )
+            horisont_line += 1
+
+        ### Drawing the horisontal lines
+        horisont_line = 1
+        while horisont_line*50 < self.canv_h:
+            self.canvas.create_line(
+                self.canv_w, 10+horisont_line*50, 0, 10+horisont_line*50,\
+                fill="yellow", width=1.0, dash=[1, 8]
+                )
+            horisont_line += 1
+
+ 
+
