@@ -3,6 +3,7 @@ from widgets import CartesianGrid, QuitButton
 from tkinter import Tk, Frame
 from math import sin, cos, radians
 from numpy import array
+from parsing import TFTR_dataframe
 
 class App:
 
@@ -14,8 +15,12 @@ class App:
         self.pointer_y = 0
 
         # Setting up the plots
-        self.cartesian = CartesianGrid(frame, master) # canvas is placed in the default position
+        self.cartesian = Plot(master, "cartesian") # canvas is placed in the default position
                                                       # in the upper left corner
+
+        df = TFTR_dataframe("BP76778.C1", "P93A.MM", "I76778.C1")
+        self.cartesian.plot_data(df.timed_data().transpose()[1])
+
         self.cartesian_zoom = CartesianGrid(frame, master, v_pos="bottom")
         self.polar = Plot(master, "polar", relx=0.5, relwidth=0.4)
         

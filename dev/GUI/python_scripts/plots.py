@@ -22,8 +22,8 @@ class Plot:
         ### ...and relative height...
         if not "relheight" in kwargs:
             kwargs["relheight"] = 0.5
-        
-        ### Also configure zoom in case of a cartesian grid
+    
+####### Also configure zoom in case of a cartesian grid
         if grid_type == "cartesian" and not "zoom" in kwargs:
             kwargs["zoom"] = 1.0
 
@@ -53,8 +53,10 @@ class Plot:
         if grid_type == "polar":
             self._make_polar_grid()
 
+########
         if grid_type == "cartesian":
             self._make_cartesian_grid()
+            self.grid_lines = []
         
         self.grid_type = grid_type
         
