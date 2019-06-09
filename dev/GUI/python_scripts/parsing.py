@@ -57,11 +57,11 @@ class TFTR_dataframe:
         j = 0
         for sen in check:
             if sen == -1.0:
-                while j<3001:
-                    bin_data[j][i]=bin_data[j][i]*(-1)
-                    j+=1
-                j=0    
-            i+=1
+                while j < 3001:
+                    bin_data[j][i] *= -1
+                    j += 1
+                j = 0    
+            i += 1
         return bin_data
 
     # Parsing the config file        
@@ -69,50 +69,54 @@ class TFTR_dataframe:
         with open(config, "r") as data:
             buf = [line.split() for line in data]
             a = np.zeros(num_of_sen)
-            i = num_of_start-1
-            num_of_sen+=i
+            i = num_of_start - 1
+            num_of_sen += i
             j = 1
             while i < num_of_sen:
-                a[j-1]=buf[i][num_of_elem]
-                i+=1
-                j+=1
+                a[j-1] = buf[i][num_of_elem]
+                i += 1
+                j += 1
         return a
 
     # Getting data for math
     def poloidal_data(self, t):
-        den = np.zeros((2, self.num_of_sens), float)
-        den[0] = self.check_config(self.config_one, self.num_of_sens, 2, 1)
-        den[1] = self.data[int(t/2)]
-        return den
+
+        pd = np.zeros((2, self.num_of_sens), float)
+        pd[0] = self.check_config(self.config_one, self.num_of_sens, 2, 1)
+        pd[1] = self.data[int(t/2)]
+        
+        return pd
 
     # Getting data for main graph
     def timed_data(self):
         
         raw_data = np.zeros((3001,2), int)
-        i=0
+        i = 0
 
         # Insert time axis (us)
         while i < 3001:
             raw_data[i][0] = 2 * i
             i += 1
         
-        i=0
-        j=0
+        i = 0
+        j = 0
 
         # Sum all sensors
-        while j<3001:
+        while j < 3001:
             while i < self.num_of_sens:
                 raw_data[j][1] = raw_data[j][1]+self.data[j][i]
-                i+=1
-            i=0
-            j+=1
+                i += 1
+            i = 0
+            j += 1
         return raw_data
 
-df = TFTR_dataframe("BP76778.C1", "P93A.MM", "I76778.C1")
+# df = TFTR_dataframe("BP76778.C1", "P93A.MM", "I76778.C1")
 
-print(df.poloidal_data(16))
+# print(df.poloidal_data(20))
 
-print(df.timed_data())
+# print(df.timed_data().transpose())
+# print(df.timed_data().transpose().shape)
+
     #config_two = "I76778.C1"
     #bin_file = "BP76778.C1"
 

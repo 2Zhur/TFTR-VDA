@@ -1,5 +1,6 @@
 from tkinter import Canvas
-from math import sin, cos, radians
+from numpy import sin, cos, radians, gcd, log10, log
+from decimal import Decimal
 
 class Plot:   
 
@@ -23,9 +24,12 @@ class Plot:
         if not "relheight" in kwargs:
             kwargs["relheight"] = 0.5
     
-####### Also configure zoom in case of a cartesian grid
+        # Also configure default zoom in case of a cartesian graph
         if grid_type == "cartesian" and not "zoom" in kwargs:
-            kwargs["zoom"] = 1.0
+            kwargs["zoom"] = False
+        
+        if grid_type == "cartesian" and not "offset" in kwargs:
+            kwargs["offset"] = 0
 
         # Initializing the canvas
         self.canvas = Canvas(
@@ -48,26 +52,91 @@ class Plot:
         self.canv_w = self.canvas.winfo_vrootwidth() * kwargs["relwidth"]
         self.canv_h = self.canvas.winfo_vrootheight() * kwargs["relheight"]
 
+        # Creating a list to store indeces of the lines of the graph
         self.plot_lines = []
 
+        # Polar grid
         if grid_type == "polar":
             self._make_polar_grid()
+            self.time_label = -1
 
-########
+        # Cartesian grid
         if grid_type == "cartesian":
             self._make_cartesian_grid()
-            self.grid_lines = []
+            
+            # Cursor
+            self.cursor = -1
         
         self.grid_type = grid_type
-        
-########
-        if self.grid_type == "cartesian":
-            self.zoom = kwargs["zoom"]
 
+##############################################################
+#                          Cursor                            # 
+##############################################################
 
-    def plot_data(self, data):
+    def put_cursor(self, x):
+        self.cursor = self.canvas.create_line(
+            x,\
+            10,\
+            x,\
+            self.canv_h - 10,\
+            fill="red",\
+            dash=[16, 16]
+        )
+
+    def move_cursor(self, x):
+        self.canvas.coords(
+            self.cursor,\
+            x,\
+            10,\
+            x,\
+            self.canv_h - 10
+        )
+
+    def hide_cursor(self):
+        self.canvas.delete(self.cursor)
+        self.cursor = -1
+
+##############################################################
+#                        Display time                        # 
+##############################################################
+
+    # Display time interval (for cartesian)
+    def dti(self, t1, t2):
+
+        self.canvas.create_text(
+            self.canv_w - 300,\
+            self.canv_h - 30,\
+            font=("Courier", 10),\
+            fill="yellow",\
+            text=str(t1) + "us to " + str(t2) + "us",\
+            anchor="nw"
+        )
+
+    # Display time (for polar)
+    def disp_time(self, t):
+        if self.time_label != -1:
+            self.canvas.delete(self.time_label)
+        self.time_label = self.canvas.create_text(
+            self.canv_w - 300,\
+            self.canv_h - 30,\
+            font=("Courier", 10),\
+            fill="yellow",\
+            text="Time: " + str(t) + "us",\
+            anchor="nw"
+        )
+
+##############################################################
+#               Common method for plotting data              #
+##############################################################
+
+    def plot_data(self, data, **kwargs):
+
+        ###########################################################
+        #                       Polar grid                        #
+        ###########################################################
 
         if self.grid_type == "polar":
+
             if len(data) != 360:
                 raise Exception("Wrond data lenth!")
 
@@ -83,8 +152,8 @@ class Plot:
 
             get_abs_rad = lambda val: mid_rad + (val * gap_w / max_div)
 
-            get_abs_x = lambda val, abs_rad: (self.canv_w / 2) + cos(radians(val)) * abs_rad
-            get_abs_y = lambda val, abs_rad: (self.canv_h / 2) + sin(radians(val)) * abs_rad
+            get_abs_x = lambda val, abs_rad: int((self.canv_w / 2) + cos(radians(val)) * abs_rad)
+            get_abs_y = lambda val, abs_rad: int((self.canv_h / 2) + sin(radians(val)) * abs_rad)
 
             i = 0
 
@@ -97,10 +166,12 @@ class Plot:
             x2 = 0.0
             y2 = 0.0
 
-            while i < 360:
+            while i < 360: 
 
                 if i == 0:
+                    print(data[0])
                     abs_rad1 = get_abs_rad(data[0])
+                    # print(abs_rad1)
                     x1 = get_abs_x(i, abs_rad1)
                     y1 = get_abs_y(i, abs_rad1)
 
@@ -110,95 +181,118 @@ class Plot:
                 x2 = get_abs_x(i, abs_rad2)
                 y2 = get_abs_y(i, abs_rad2)
 
-                self.canvas.coords(self.plot_lines[i], x1, y1, x2, y2)
+                self.canvas.coords(
+                    self.plot_lines[i],\
+                    x1,\
+                    y1,\
+                    x2,\
+                    y2
+                )
 
                 abs_rad1 = abs_rad2
-                x1 = x2
-                y1 = y2
+                x1, y1 = x2, y2
 
                 i += 1
 
             # values -> radius + angle -> x, y -> relx, rely
+        
+
+        ###########################################################
+        #                     Cartesian grid                      #
+        ###########################################################
 
         if self.grid_type == "cartesian":
-         
-            hi_1 = self.canv_h - 40
-            hi_2 = hi_1/2
 
-            delt_plus_max = -1
-            delt_minus_min = 1
-
-            for i in range(0,3001,1):
-                if data[i] > 0:
-                    if delt_plus_max <= data[i]:
-                        delt_plus_max = data[i]
-                else:
-                    if delt_minus_min >= data[i]:
-                        delt_minus_min = data[i]
+            self.canvas.delete("all")
             
-            delt_plus = delt_plus_max / (hi_2 - 0)
-            delt_minus = delt_minus_min / (hi_1 - hi_2)
+            dmax = data.max()
+            dmin = data.min()
 
-            ListOfCoords = list()
-            for i in range (3001):
-                if data[i] >= 0:
-                    ListOfCoords.append(hi_2 - data[i]/delt_plus)
-                else:
-                    ListOfCoords.append(hi_2 + data[i]/delt_minus)
+            max_div = max(abs(dmax), abs(dmin))
 
-            # For creating plot of 500 points on canvas 
-            step = 6
-            for i in range (0,3001-step,step):
-                self.canvas.create_line(i//step, ListOfCoords[i], (i+step)//step, ListOfCoords[i+step], full = "blue")
-        
-        if self.grid_type == "zoom":
+            self._make_cartesian_grid()
 
-            def motion(event):
-                zoomSquareSize = 50
- 
-                x1 = event.x - zoomSquareSize
-                x2 = event.x + zoomSquareSize
-                if x1 < 0:
-                    x1 = 0
-                if x2 > self.canv_w:
-                    x2 = self.canv_w
+            data_len = len(data)
 
-                step = 1
-                stretch = self.canv_w // (2 * zoomSquareSize)
+            if data_len <= (self.canv_w - 40):
+                data_step = 1
+                canv_step = (self.canv_w - 40) / data_len
+            else:
+                data_step = data_len / (self.canv_w - 40)
+                canv_step = 1
 
-                self.canvas.delete("all")
+            get_abs_y = lambda y: int(((self.canv_h / 2 - 10) * (y / max_div)) + self.canv_h / 2)
 
-                # For crating plot in motion 
-                for i in range (x1,x2-step,step):
-                    self.canvas.create_line((i-x1)*stretch, ListOfCoords[i], (i-x1+step)*stretch, ListOfCoords[i+step], fill = "blue")
+            value_step = 10 ** (int(log10(max_div)))
+            if max_div / value_step < 3:
+                value_step /= 2
 
-                    #Grid, VD is 80 mcs 
-                    vertical_line = 5
+            y_p = 0
+            y_n = 0
+            level = value_step
 
-                    while vertical_line > 0: 
+            while y_p - y_n < self.canv_h:
+                
+                y_p = get_abs_y(level)
+                y_n = get_abs_y(-1 * level)
+                
+                self.canvas.create_line(
+                    20,\
+                    y_p,\
+                    self.canv_w - 20,\
+                    y_p,\
+                    fill="yellow",\
+                    dash=[1, 6]
+                )
+                
+                self.canvas.create_text(
+                    10,\
+                    y_p - 5,\
+                    font=("Courier", 7),\
+                    fill="yellow",\
+                    text="{:.1E}".format(Decimal(str(level))),\
+                    anchor="nw"
+                )
+                self.canvas.create_line(20, y_n, self.canv_w - 20, y_n, fill="yellow", dash=[1, 6])
 
-                        self.canvas.create_line(
-                            (self.canv_w + vertical_line * stretch -event.x)%(self.canv_w//stretch)*stretch,\
-                            0,\
-                            (self.canv_w + vertical_line * stretch - event.x)%(self.canv_w//stretch)*stretch,\
-                            self.canv_h,\
-                            fill = "yellow", width=1.0, dash=[1, 8]
-                            )
 
-                        vertical_line = vertical_line - 1  
+                self.canvas.create_text(
+                    10,\
+                    y_n - 5,\
+                    font=("Courier", 7),\
+                    fill="yellow",\
+                    text="{:.1E}".format(Decimal(str(-1 * level))),\
+                    anchor="nw"
+                )
 
-                        horisont_line = 1
-                        while horisont_line*50 < self.canv_h:
-                            self.canvas.create_line(
-                                self.canv_w, 10+horisont_line*50, 0, 10+horisont_line*50,\
-                                fill="yellow", width=1.0, dash=[1, 8]
-                                )
-                            horisont_line += 1
+                level += value_step
 
-                self.canvas.bind("<B1-Motion>", motion)
+            x1 = 20
+            y1 = get_abs_y(data[0])
+
+            x2 = 20
+            x2_fl = 20.0
+            y2 = get_abs_y(data[0])
+
+            i = 0
+            i_fl = 0.0
+
+            while i < data_len - 1:
+                
+                x2_fl += canv_step
+                x2 = int(x2_fl)
+                y2 = get_abs_y(data[i+1])
+
+                self.canvas.create_line(x1, y1, x2, y2, fill="white")
+
+                i_fl += data_step
+
+                i = int(i_fl)
+
+                x1, y1 = x2, y2
 
 ##############################################################
-#                 Polar grid private methods                 #
+#                 Polar grid private method                  #
 ##############################################################
 
     def _make_polar_grid(self):
@@ -263,53 +357,32 @@ class Plot:
         i = 0
         while i < 360:
             self.plot_lines.append(
-                self.canvas.create_line(0, 0, 0, 0, fill="yellow")
+                self.canvas.create_line(
+                    0,\
+                    0,\
+                    0,\
+                    0,\
+                    fill="white"
+                )
             )
             i += 1
 
 ##############################################################
-#                   For the cartesian grid                   # 
-##############################################################        
-
-#
-# The class already has the folowing attributes:
-# - self.canv_w - the width of the canvas
-# - self.canv_h - the height of the canvas
-# - self.zoom - the desired zoom
-#   (see lines 26 and 61)
-# - self.grid_type - "cartesian" or "polar"
-#
-
-
+#               Cartesian grid private method                # 
+##############################################################
 
     def _make_cartesian_grid(self):
-        ### Drawing axes
         self.canvas.create_line(
-            10, self.canv_h/2, self.canv_w-10, self.canv_h/2,\
-            fill="yellow", width=1.0
-            )
+            10,\
+            self.canv_h/2,\
+            self.canv_w - 10,\
+            self.canv_h/2,\
+            fill="yellow"
+        )
         self.canvas.create_line(
-            10, self.canv_h, 10, 0, fill="yellow", width=1.0
-            )
-
-        ### Drawing the virtical lines
-        ### Value of division is 600mcs
-        horisont_line = 1
-        while horisont_line*50 < self.canv_w:
-            self.canvas.create_line(
-                10+horisont_line*50, self.canv_h, 10+horisont_line*50,\
-                0, fill="yellow", width=1.0, dash=[1, 8]
-                )
-            horisont_line += 1
-
-        ### Drawing the horisontal lines
-        horisont_line = 1
-        while horisont_line*50 < self.canv_h:
-            self.canvas.create_line(
-                self.canv_w, 10+horisont_line*50, 0, 10+horisont_line*50,\
-                fill="yellow", width=1.0, dash=[1, 8]
-                )
-            horisont_line += 1
-
- 
-
+            20,\
+            10,\
+            20,\
+            self.canv_h - 10,\
+            fill="yellow"
+        )

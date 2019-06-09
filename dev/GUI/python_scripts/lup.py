@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import polynomial as Pol
+from numpy import radians
 
 # Calculation of L,U and P matrices
 def lu(A):
@@ -26,6 +27,7 @@ def lu(A):
         
         # Permutation of the U matrix
         U = P_0.dot(U) 
+        # print(U)
         
         # Calculation of common factor 
         for i in range(k + 1, n): 
@@ -58,7 +60,7 @@ def solve(L, U, P, b):
     # Direct substitution
     for i in range(n): 
         s = sum(L[i][j] * y[j] for j in range(i))
-        y[i] = (P[0][i]-s)/L[i][i]
+        y[i] = (P[i]-s)/L[i][i]
         
     # Reverse substitution
     for i in reversed(range(n)): 
@@ -69,14 +71,14 @@ def solve(L, U, P, b):
 # Calculation of 360 points with a step of 1 degree
 def get_all_points (x):
     n = 360
-    values = np.zeros(360)
+    values = np.zeros(n)
     
-    # Polinomial with certain coefficients
+    # Creating a polinomial with certain coefficients
     p1 = Pol.Polynomial(x) 
     
-    # Calculation of values of polinomial in 360 points
+    # Calculation of values of the polinomial in 360 points
     for i in range(n): 
-        values[i] = p1(i) 
+        values[i] = p1(radians(i)) 
     return values
 
 # Marix A with angles of detectors          
